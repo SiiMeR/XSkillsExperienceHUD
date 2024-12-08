@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Cairo;
 using Vintagestory.API.Client;
 using XLib.XLeveling;
@@ -8,8 +7,7 @@ namespace XSkillsExperienceHUD;
 
 public class ExperienceDisplay : HudElement
 {
-    private long id;
-    public Dictionary<string, string> xpDisplay = new();
+    public FloatingXpDisplay FloatingXpDisplay;
 
     public ExperienceDisplay(ICoreClientAPI capi) : base(capi)
     {
@@ -30,29 +28,21 @@ public class ExperienceDisplay : HudElement
         );
         capi.Input.SetHotKeyHandler("redrawexperiencehud", ResetupDialog);
         SetupDialog();
+
+        FloatingXpDisplay = new FloatingXpDisplay(capi);
+        FloatingXpDisplay.SetupDialog();
     }
+
 
     public void UpdateDisplay(PlayerSkill playerSkill, float xp)
     {
         SingleComposer?.GetCustomDraw(playerSkill.Skill.Name)?.Redraw();
-
-        // var xpString =
-        //     $"Level {playerSkill.Level} - {playerSkill.Experience + xp:F2}/{playerSkill.RequiredExperience:F2}";
-        // if (xpDisplay.ContainsKey(skillName))
-        // {
-        //     xpDisplay[skillName] = xpString;
-        // }
-        // else
-        // {
-        //     xpDisplay.TryAdd(skillName, xpString);
-        // }
-
-        // UpdateText();
+        FloatingXpDisplay?.UpdateDisplay(playerSkill, xp);
     }
 
     public bool ResetupDialog(KeyCombination comb)
     {
-        capi.World.UnregisterGameTickListener(id);
+        FloatingXpDisplay?.ResetupDialog(comb);
         SetupDialog();
         return true;
     }
@@ -76,17 +66,13 @@ public class ExperienceDisplay : HudElement
             .LocalPlayerSkillSet;
 
         SingleComposer = capi.Gui.CreateCompo("experiencedialog", dialogBounds);
-        // .AddShadedDialogBG(bgBounds);
 
         var y = 40;
-        var barBoundList = new List<ElementBounds>();
         for (var index = 0; index < playerSkillset.PlayerSkills.Count; index++)
         {
             var playerSkill = playerSkillset.PlayerSkills[index];
-            var barBounds = ElementBounds.Fixed(20, y + 25 * index, 200, 30)
+            var barBounds = ElementBounds.Fixed(20, 25 * index, 200, 30)
                 .WithFixedPadding(GuiStyle.HalfPadding);
-            // barBoundList.Add(barBounds);
-
 
             SingleComposer.AddDynamicCustomDraw(barBounds, (ctx, surface, currentBounds) =>
             {
@@ -139,13 +125,12 @@ public class ExperienceDisplay : HudElement
             }, playerSkill.Skill.Name);
         }
 
-        // bgBounds.WithChildren(barBoundList.ToArray());
-
         SingleComposer.Bounds.Alignment = EnumDialogArea.RightBottom;
         SingleComposer.Compose();
 
         // id = capi.World.RegisterGameTickListener(dt => UpdateText(), 1000);
     }
+
 
     // Custom draw method for the progress bar
     private void DrawProgressBar(Context ctx, double width, double height, float fraction, double offsetX = 0,
@@ -173,18 +158,6 @@ public class ExperienceDisplay : HudElement
         ctx.ClosePath();
     }
 
-    private void UpdateText()
-    {
-        if (SingleComposer == null)
-        {
-            return;
-        }
-
-        // SingleComposer
-        //     .GetDynamicText("experiencelist")
-        //     .SetNewText(GetXPString());
-        SingleComposer.ReCompose();
-    }
 
     public override void OnOwnPlayerDataReceived()
     {
@@ -192,11 +165,6 @@ public class ExperienceDisplay : HudElement
         SetupDialog();
     }
 
-    public override void Dispose()
-    {
-        base.Dispose();
-        capi.World.UnregisterGameTickListener(id);
-    }
 
     private bool ToggleGui(KeyCombination comb)
     {
@@ -209,6 +177,8 @@ public class ExperienceDisplay : HudElement
         {
             TryOpen();
         }
+
+        FloatingXpDisplay.ToggleGui(comb);
 
         return true;
     }
