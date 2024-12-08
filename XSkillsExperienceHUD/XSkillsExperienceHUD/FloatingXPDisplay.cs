@@ -9,6 +9,9 @@ namespace XSkillsExperienceHUD;
 public class FloatingXpDisplay : HudElement
 {
     private readonly List<FloatingXP> floatingXPs = new();
+    private readonly Queue<FloatingXP> pendingXPs = new();
+    private readonly float spawnInterval = 1f; // 1 second interval
+    private float cooldownTimer;
     private long id;
 
     public FloatingXpDisplay(ICoreClientAPI capi) : base(capi)
@@ -50,7 +53,7 @@ public class FloatingXpDisplay : HudElement
     private void DrawFloatingXp(Context ctx, ImageSurface surface, ElementBounds currentBounds)
     {
         ctx.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Bold);
-        ctx.SetFontSize(20); // adjust as needed
+        ctx.SetFontSize(25); // adjust as needed
 
         foreach (var fxp in floatingXPs)
         {
@@ -64,18 +67,38 @@ public class FloatingXpDisplay : HudElement
 
     public void UpdateDisplay(PlayerSkill playerSkill, float xp)
     {
-        double startX = 60;
+        if (playerSkill.Skill.Id == 0)
+        {
+            return;
+        }
+
+        var skillName = playerSkill.Skill.DisplayName;
+        double startX = 50;
         double startY = 100;
 
-        var xpText = $"+{xp:0.###} {playerSkill.Skill.DisplayName} XP";
-        floatingXPs.Add(new FloatingXP(xpText, startX, startY));
+        // Check pending XPs only for aggregation
+        foreach (var queuedXP in pendingXPs)
+        {
+            if (queuedXP.SkillName == skillName)
+            {
+                queuedXP.AddXP(xp);
+                SingleComposer?.GetCustomDraw("floatingXP")?.Redraw();
+                return;
+            }
+        }
 
+        // No matching pending entry, create a new one
+        pendingXPs.Enqueue(new FloatingXP(skillName, xp, startX, startY, 2.0f));
         SingleComposer?.GetCustomDraw("floatingXP")?.Redraw();
     }
 
     private void OnGameTick(float dt)
     {
-        // Update all floating XP texts
+        // Update cooldown timer
+        cooldownTimer += dt;
+
+
+        // Update all visible XPs
         for (var i = floatingXPs.Count - 1; i >= 0; i--)
         {
             floatingXPs[i].Update(dt);
@@ -85,8 +108,14 @@ public class FloatingXpDisplay : HudElement
             }
         }
 
-        // Force redraw if needed
-        // The custom draw can be handled in a dedicated custom draw handler
+        // If cooldown passed 1 second and we have pending XPs, spawn one
+        if (cooldownTimer >= spawnInterval && pendingXPs.Count > 0)
+        {
+            Console.WriteLine("yes");
+            floatingXPs.Add(pendingXPs.Dequeue());
+            cooldownTimer = 0f; // reset the timer
+        }
+
         SingleComposer?.GetCustomDraw("floatingXP")?.Redraw();
     }
 
