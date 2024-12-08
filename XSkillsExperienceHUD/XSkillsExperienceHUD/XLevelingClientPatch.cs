@@ -37,7 +37,7 @@ public class XLevelingClientPatch
             return true;
         }
 
-        XSkillsExperienceHUDModSystem.ExperienceDisplay.SetXP(genericSkill.DisplayName, playerSkill, experience);
+        XSkillsExperienceHUDModSystem.ExperienceDisplay.UpdateDisplay(playerSkill, experience);
         return true;
     }
 }
