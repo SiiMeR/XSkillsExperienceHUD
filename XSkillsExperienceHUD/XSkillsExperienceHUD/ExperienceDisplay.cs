@@ -36,6 +36,7 @@ public class ExperienceDisplay : HudElement
 
     public void UpdateDisplay(PlayerSkill playerSkill, float xp)
     {
+        SetupDialog();
         SingleComposer?.GetCustomDraw(playerSkill.Skill.Name)?.Redraw();
         FloatingXpDisplay?.UpdateDisplay(playerSkill, xp);
     }
@@ -51,7 +52,6 @@ public class ExperienceDisplay : HudElement
     {
         var dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.RightMiddle);
 
-        // Background boundaries. Again, just make it fit it's child elements, then add the text as a child element
         var bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
         bgBounds.BothSizing = ElementSizing.FitToChildren;
 
@@ -71,23 +71,25 @@ public class ExperienceDisplay : HudElement
         for (var index = 0; index < playerSkillset.PlayerSkills.Count; index++)
         {
             var playerSkill = playerSkillset.PlayerSkills[index];
-            var barBounds = ElementBounds.Fixed(20, 25 * index, 200, 30)
+            var barBounds = ElementBounds.Fixed(20, 25 * index, 175, 30)
                 .WithFixedPadding(GuiStyle.HalfPadding);
 
+            var hoverTextBounds = ElementBounds.Fixed(20, 25 * index + 10, 175, 20);
+
+            var hoverText = $"{playerSkill.Experience:0.##}/{playerSkill.RequiredExperience:0.#} XP";
+            SingleComposer.AddAutoSizeHoverText(hoverText, CairoFont.WhiteDetailText(), 200, hoverTextBounds);
             SingleComposer.AddDynamicCustomDraw(barBounds, (ctx, surface, currentBounds) =>
             {
                 var fraction = playerSkill.Experience / playerSkill.RequiredExperience;
                 var w = currentBounds.InnerWidth;
                 var h = currentBounds.InnerHeight;
 
-                // Draw the progress bar first
                 double barX = 0;
-                double barY = 20; // Bar offset down to leave space for text above if needed
+                double barY = 20;
                 var barWidth = w;
-                var barHeight = h - 20; // Height of the bar area
+                var barHeight = h - 20;
                 DrawProgressBar(ctx, barWidth, barHeight, fraction, barX, barY);
 
-                // Prepare font and text
                 ctx.SetSourceRGBA(1, 1, 1, 1);
                 ctx.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Bold);
                 ctx.SetFontSize(15);

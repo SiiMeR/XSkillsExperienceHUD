@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Cairo;
 using Vintagestory.API.Client;
+using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 using XLib.XLeveling;
 
 namespace XSkillsExperienceHUD;
@@ -12,6 +14,8 @@ public class FloatingXpDisplay : HudElement
     private readonly Queue<FloatingXP> pendingXPs = new();
     private readonly float spawnInterval = 1f; // 1 second interval
     private float cooldownTimer;
+
+    private IAsset Heart;
     private long id;
 
     public FloatingXpDisplay(ICoreClientAPI capi) : base(capi)
@@ -39,6 +43,8 @@ public class FloatingXpDisplay : HudElement
             return;
         }
 
+        Heart = capi.Assets.Get("xskillsexperiencehud:textures/heart.svg");
+
         SingleComposer = capi.Gui.CreateCompo("floatingxpdisplay", dialogBounds);
 
         var floatingXpBounds = ElementBounds.Fixed(EnumDialogArea.RightTop, -50, 30, 400, 300);
@@ -57,9 +63,7 @@ public class FloatingXpDisplay : HudElement
 
         foreach (var fxp in floatingXPs)
         {
-            // Yellowish text fading out
             ctx.SetSourceRGBA(1, 1, 0, fxp.Alpha);
-            // Just draw at the coordinates stored in fxp
             ctx.MoveTo(fxp.X, fxp.Y);
             ctx.ShowText(fxp.Text);
         }
@@ -111,7 +115,6 @@ public class FloatingXpDisplay : HudElement
         // If cooldown passed 1 second and we have pending XPs, spawn one
         if (cooldownTimer >= spawnInterval && pendingXPs.Count > 0)
         {
-            Console.WriteLine("yes");
             floatingXPs.Add(pendingXPs.Dequeue());
             cooldownTimer = 0f; // reset the timer
         }
