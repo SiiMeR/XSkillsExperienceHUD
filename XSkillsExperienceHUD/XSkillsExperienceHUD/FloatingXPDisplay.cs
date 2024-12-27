@@ -30,7 +30,7 @@ public class FloatingXpDisplay : HudElement
 
         SingleComposer = capi.Gui.CreateCompo("floatingxpdisplay", dialogBounds);
 
-        var floatingXpBounds = ElementBounds.Fixed(EnumDialogArea.RightTop, -50, 30, 400, 300);
+        var floatingXpBounds = ElementBounds.Fixed(EnumDialogArea.CenterMiddle, 165, 0, 400, 300);
         SingleComposer.AddDynamicCustomDraw(floatingXpBounds, (ctx, surface, bounds) =>
         {
             foreach (var fxpElem in floatingXPElements)
@@ -39,7 +39,7 @@ public class FloatingXpDisplay : HudElement
             }
         }, "floatingXP");
 
-        SingleComposer.Bounds.Alignment = EnumDialogArea.RightTop;
+        SingleComposer.Bounds.Alignment = EnumDialogArea.CenterMiddle;
         SingleComposer.Compose();
     }
 
@@ -65,7 +65,7 @@ public class FloatingXpDisplay : HudElement
         }
 
         pendingXPs.Enqueue(new FloatingXPElement(capi, ElementBounds.Fixed(0, 0, 0, 0), skillName, xp, startX, startY,
-            2.0f));
+            3.0f));
         SingleComposer?.GetCustomDraw("floatingXP")?.Redraw();
     }
 
