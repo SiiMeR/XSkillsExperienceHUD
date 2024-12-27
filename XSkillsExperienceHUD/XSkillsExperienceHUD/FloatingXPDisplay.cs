@@ -9,7 +9,7 @@ public class FloatingXpDisplay : HudElement
 {
     private readonly List<FloatingXPElement> floatingXPElements = new();
     private readonly Queue<FloatingXPElement> pendingXPs = new();
-    private readonly float spawnInterval = 1f;
+    private readonly float spawnInterval = 0.3f;
     private float cooldownTimer;
     private long id;
 
