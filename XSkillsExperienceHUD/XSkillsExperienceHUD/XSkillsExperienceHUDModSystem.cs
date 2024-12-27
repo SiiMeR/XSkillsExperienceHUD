@@ -14,6 +14,7 @@ public class XSkillsExperienceHUDModSystem : ModSystem
     {
         capi = api;
 
+        Icons.Initialize();
         ExperienceDisplay = new ExperienceDisplay(api);
         ApplyHarmonyPatch(api);
     }

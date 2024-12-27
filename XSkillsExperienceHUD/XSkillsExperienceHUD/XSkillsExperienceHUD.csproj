@@ -38,6 +38,10 @@
             <HintPath>..\..\..\xlib_v0.8.6\xlib.dll</HintPath>
             <Private>false</Private>
         </Reference>
+        <Reference Include="SkiaSharp">
+            <HintPath>$(VINTAGE_STORY)/Lib/SkiaSharp.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
@@ -47,10 +51,6 @@
         <Content Include="modinfo.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="assets\xskillsexperiencehud\textures\"/>
     </ItemGroup>
 
 </Project>

@@ -30,7 +30,6 @@ public class ExperienceDisplay : HudElement
         SetupDialog();
 
         FloatingXpDisplay = new FloatingXpDisplay(capi);
-        FloatingXpDisplay.SetupDialog();
     }
 
 
