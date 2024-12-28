@@ -1,4 +1,5 @@
-﻿using Cairo;
+﻿using System;
+using Cairo;
 using Vintagestory.API.Client;
 
 namespace XSkillsExperienceHUD;
@@ -6,7 +7,8 @@ namespace XSkillsExperienceHUD;
 public class FloatingXPElement : GuiElement
 {
     private readonly float fadeSpeed = 0.5f; // adjust as needed
-    private float AccruedXP;
+    private readonly float totalDuration;
+    private float accruedXp;
 
     private ImageSurface iconSurface;
 
@@ -16,17 +18,18 @@ public class FloatingXPElement : GuiElement
         : base(capi, bounds)
     {
         SkillName = skillName;
-        AccruedXP = xp;
+        accruedXp = xp;
         X = x;
         Y = y;
         Duration = duration;
+        totalDuration = duration;
         Alpha = 1f;
     }
 
     public string SkillName { get; }
     public float Alpha { get; private set; }
     public float Duration { get; private set; }
-    public string Text => $"+{AccruedXP:0.##}";
+    public string Text => $"+{accruedXp:0.##}";
     public double X { get; }
     public double Y { get; set; }
     public bool IsDead => Alpha <= 0;
@@ -78,6 +81,9 @@ public class FloatingXPElement : GuiElement
         Alpha -= fadeSpeed * dt;
         Y -= dt * 45;
 
+        var progress = 1f - Duration / totalDuration;
+        Alpha = 1f - Easings.EaseOutQuad(progress);
+
         if (Alpha < 0)
         {
             Alpha = 0;
@@ -86,7 +92,7 @@ public class FloatingXPElement : GuiElement
 
     public void AddXP(float xp)
     {
-        AccruedXP += xp;
+        accruedXp += xp;
     }
 
     public override void Dispose()
@@ -112,5 +118,13 @@ public class FloatingXPElement : GuiElement
             "temporaladaptation" => IconName.TemporalAdaption,
             _ => IconName.Unknown
         };
+    }
+}
+
+public static class Easings
+{
+    public static float EaseOutQuad(float t)
+    {
+        return 1f - (1f - t) * (1f - t);
     }
 }

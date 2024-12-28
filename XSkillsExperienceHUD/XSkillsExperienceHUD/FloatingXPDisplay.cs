@@ -30,7 +30,7 @@ public class FloatingXpDisplay : HudElement
 
         SingleComposer = capi.Gui.CreateCompo("floatingxpdisplay", dialogBounds);
 
-        var floatingXpBounds = ElementBounds.Fixed(EnumDialogArea.CenterMiddle, 165, 0, 400, 300);
+        var floatingXpBounds = ElementBounds.Fixed(EnumDialogArea.CenterMiddle, 200, 0, 400, 300);
         SingleComposer.AddDynamicCustomDraw(floatingXpBounds, (ctx, surface, bounds) =>
         {
             foreach (var fxpElem in floatingXPElements)

@@ -23,10 +23,11 @@ public class XSkillsExperienceHUDModSystem : ModSystem
     {
         var harmony = new Harmony(Mod.Info.ModID);
 
-        var original = AccessTools.Method(typeof(XLevelingClient), nameof(XLevelingClient.AddExperienceToPlayerSkill));
-        var patch = AccessTools.Method(typeof(XLevelingClientPatch), nameof(XLevelingClientPatch.Prefix));
+        var original =
+            AccessTools.Method(typeof(XLevelingClient), "MessageHandler", new[] { typeof(ExperiencePackage) });
+        var patch = AccessTools.Method(typeof(XLevelingClientPatch), nameof(XLevelingClientPatch.Patch));
 
-        harmony.Patch(original, new HarmonyMethod(patch));
+        harmony.Patch(original, postfix: new HarmonyMethod(patch));
 
         base.StartClientSide(api);
     }
