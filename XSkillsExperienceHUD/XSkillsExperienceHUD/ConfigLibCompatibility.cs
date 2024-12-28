@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Numerics;
 using ConfigLib;
 using ImGuiNET;
@@ -48,11 +47,19 @@ public class ConfigLibCompatibility
 
         var floatingTextColor = config.FloatingTextColor;
         var color = ColorTranslator.FromHtml(floatingTextColor);
-        var colorVector = new Vector3(color.R, color.G, color.B);
-        ImGui.ColorPicker3("Floating text color", ref colorVector, ImGuiColorEditFlags.Float);
+        var colorVector = new Vector3(
+            color.R / 255.0f,
+            color.G / 255.0f,
+            color.B / 255.0f
+        );
+        ImGui.ColorPicker3("Floating text color", ref colorVector);
+
+        var r = (int)(colorVector.X * 255.0f);
+        var g = (int)(colorVector.Y * 255.0f);
+        var b = (int)(colorVector.Z * 255.0f);
+
         var htmlColor =
-            ColorTranslator.ToHtml(Color.FromArgb((int)Math.Clamp(colorVector.X * 255f, 0, 255),
-                (int)Math.Clamp(colorVector.Y * 255f, 0, 255), (int)Math.Clamp(colorVector.Z * 255f, 0, 255)));
+            ColorTranslator.ToHtml(Color.FromArgb(r, g, b));
         config.FloatingTextColor =
             htmlColor;
         //
@@ -73,32 +80,5 @@ public class ConfigLibCompatibility
         //     ImGui.BeginDisabled();
         // }
         //
-        // ImGui.SameLine();
-        //
-        // var canAddMarker = markerToAdd != "" && !config.Markers.ContainsKey(markerToAdd);
-        // if (!canAddMarker)
-        // {
-        //     ImGui.BeginDisabled();
-        // }
-        //
-        // if (ImGui.Button(Lang.Get(settingAdd) + $"##add-{id}"))
-        // {
-        //     config.Markers.Add(markerToAdd, new());
-        //     selectedMarker = config.Markers.Keys.ToArray().IndexOf(markerToAdd);
-        // }
-        //
-        // if (!canAddMarker)
-        // {
-        //     ImGui.EndDisabled();
-        // }
-        //
-        // ImGui.SameLine();
-        //
-        // ImGui.InputTextWithHint($"##{id}", Lang.Get(textRegexSupport), ref markerToAdd, 512);
-        //
-        // string[] keys = config.Markers.Keys.ToArray();
-        // ImGui.ListBox(Lang.Get(settingMarkers) + $"##markers-{id}", ref selectedMarker, keys, keys.Length);
-        //
-        // ImGui.SeparatorText(Lang.Get(settingMarkerProperties));
     }
 }
