@@ -101,24 +101,18 @@ public class ExperienceDisplay : HudElement
                 var extCurrentLevel = ctx.TextExtents(currentLevelText);
                 var extNextLevel = ctx.TextExtents(nextLevelText);
 
-                // Vertical centering in the bar:
-                // We'll center text vertically by using the bar's vertical center line.
-                // baselineY = center of bar - half text height - YBearing
                 var centerY = barY + barHeight / 2;
 
-                // Draw skill name centered horizontally:
                 var skillNameX = barX + (barWidth - extSkill.Width) / 2;
                 var skillNameY = centerY - extSkill.Height / 2 - extSkill.YBearing;
                 ctx.MoveTo(skillNameX, skillNameY);
                 ctx.ShowText(skillName);
 
-                // Draw current level on the left inside the bar
                 var currentLevelX = barX + 3;
                 var currentLevelY = centerY - extCurrentLevel.Height / 2 - extCurrentLevel.YBearing;
                 ctx.MoveTo(currentLevelX, currentLevelY);
                 ctx.ShowText(currentLevelText);
 
-                // Draw next level on the right inside the bar
                 var nextLevelX = barX + barWidth - extNextLevel.Width - 3;
                 var nextLevelY = centerY - extNextLevel.Height / 2 - extNextLevel.YBearing;
                 ctx.MoveTo(nextLevelX, nextLevelY);
@@ -128,27 +122,21 @@ public class ExperienceDisplay : HudElement
 
         SingleComposer.Bounds.Alignment = EnumDialogArea.RightBottom;
         SingleComposer.Compose();
-
-        // id = capi.World.RegisterGameTickListener(dt => UpdateText(), 1000);
     }
 
 
-    // Custom draw method for the progress bar
     private void DrawProgressBar(Context ctx, double width, double height, float fraction, double offsetX = 0,
         double offsetY = 0)
     {
-        // Background bar
-        ctx.SetSourceRGBA(0.1, 0.1, 0.1, 0.8); // Dark background
+        ctx.SetSourceRGBA(0.1, 0.1, 0.1, 0.8);
         RoundRect(ctx, offsetX, offsetY, width, height, 3);
         ctx.Fill();
 
-        // Filled portion
-        ctx.SetSourceRGBA(0.2, 0.6, 0.2, 0.9); // Green-ish color
+        ctx.SetSourceRGBA(0.2, 0.6, 0.2, 0.9);
         RoundRect(ctx, offsetX, offsetY, width * fraction, height, 3);
         ctx.Fill();
     }
 
-    // Helper to draw rounded rectangles (optional)
     private void RoundRect(Context ctx, double x, double y, double w, double h, double r)
     {
         ctx.NewPath();

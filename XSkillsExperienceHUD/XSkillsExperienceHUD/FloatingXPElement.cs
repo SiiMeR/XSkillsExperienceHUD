@@ -1,12 +1,11 @@
-﻿using System;
-using Cairo;
+﻿using Cairo;
 using Vintagestory.API.Client;
 
 namespace XSkillsExperienceHUD;
 
 public class FloatingXPElement : GuiElement
 {
-    private readonly float fadeSpeed = 0.5f; // adjust as needed
+    private readonly float fadeSpeed = 0.5f;
     private readonly float totalDuration;
     private float accruedXp;
 
@@ -47,7 +46,7 @@ public class FloatingXPElement : GuiElement
         ctx.ShowText(Text);
 
         // main txt
-        ctx.SetSourceRGBA(1, 1, 0, Alpha); // Yellow text
+        ctx.SetSourceRGBA(1, 1, 0, Alpha);
         ctx.MoveTo(X, Y);
         ctx.ShowText(Text);
 

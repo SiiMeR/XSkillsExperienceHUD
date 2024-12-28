@@ -45,6 +45,7 @@ public class FloatingXpDisplay : HudElement
 
     public void UpdateDisplay(PlayerSkill playerSkill, float xp)
     {
+        //TODO: Make this configurable
         if (playerSkill.Skill.Id == 0)
         {
             return;
