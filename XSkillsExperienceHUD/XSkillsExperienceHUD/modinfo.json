@@ -8,6 +8,7 @@
     "description": "Shows a small text when you gain XP in a skill",
     "version": "1.0.0",
     "dependencies": {
-        "game": "1.19.8"
+        "game": "",
+        "xlib": ""
     }
 }

@@ -24,11 +24,17 @@ public enum IconName
 
 public static class Icons
 {
-    public static Dictionary<IconName, string> IconNameMapping;
+    private const int IconWidth = 30;
+    private const int IconHeight = 30;
+    private static Dictionary<IconName, string> _iconNameMapping;
+    private static readonly Dictionary<IconName, ImageSurface> IconCache = new();
+
+    private static ICoreClientAPI capi => XSkillsExperienceHUDModSystem.capi;
+
 
     public static void Initialize()
     {
-        IconNameMapping = new Dictionary<IconName, string>
+        _iconNameMapping = new Dictionary<IconName, string>
         {
             { IconName.Survival, "heart.png" },
             { IconName.Mining, "pickaxe.png" },
@@ -50,27 +56,51 @@ public static class Icons
         };
     }
 
-    public static ImageSurface GetImageSurfaceForIcon(IconName iconName, int width = 30, int height = 30)
+    public static ImageSurface GetImageSurfaceForIcon(IconName iconName)
     {
-        var capi = XSkillsExperienceHUDModSystem.capi;
         var logger = capi.Logger;
 
+        // 1) Check if we already have a surface for this icon.
+        if (IconCache.TryGetValue(iconName, out var surface))
+        {
+            // Already cached
+            return surface;
+        }
+
+        // 2) If not cached, load it now:
         try
         {
-            var icon = GetAssetByFileName(IconNameMapping[iconName]);
-            return GuiElement.getImageSurfaceFromAsset(new BitmapExternal(icon.Data, icon.Data.Length, logger),
-                width,
-                height);
+            var fileName = _iconNameMapping[iconName];
+            var iconAsset = GetAssetByFileName(fileName);
+
+            surface = GuiElement.getImageSurfaceFromAsset(
+                new BitmapExternal(iconAsset.Data, iconAsset.Data.Length, logger),
+                IconWidth,
+                IconHeight
+            );
+
+            IconCache[iconName] = surface;
+            return surface;
         }
         catch (Exception e)
         {
-            logger.Error($"Failed to create surface out of icon {iconName}!");
+            logger.Error($"Failed to create surface for icon {iconName}!\n{e}");
             return null;
         }
     }
 
+    public static void DisposeAll()
+    {
+        foreach (var kvp in IconCache)
+        {
+            kvp.Value?.Dispose();
+        }
+
+        IconCache.Clear();
+    }
+
     private static IAsset GetAssetByFileName(string fileName)
     {
-        return XSkillsExperienceHUDModSystem.capi.Assets.Get($"xskillsexperiencehud:textures/{fileName}");
+        return capi.Assets.Get($"xskillsexperiencehud:textures/{fileName}");
     }
 }

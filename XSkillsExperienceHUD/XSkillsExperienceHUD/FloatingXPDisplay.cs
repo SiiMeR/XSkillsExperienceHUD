@@ -16,7 +16,7 @@ public class FloatingXpDisplay : HudElement
     public FloatingXpDisplay(ICoreClientAPI capi) : base(capi)
     {
         SetupDialog();
-        id = capi.World.RegisterGameTickListener(OnGameTick, 20);
+        id = capi.World.RegisterGameTickListener(OnGameTick, 30);
     }
 
     public void SetupDialog()
@@ -30,7 +30,7 @@ public class FloatingXpDisplay : HudElement
 
         SingleComposer = capi.Gui.CreateCompo("floatingxpdisplay", dialogBounds);
 
-        var floatingXpBounds = ElementBounds.Fixed(EnumDialogArea.CenterMiddle, 200, 0, 400, 300);
+        var floatingXpBounds = ElementBounds.Fixed(EnumDialogArea.RightTop, 0, 0, 400, 400);
         SingleComposer.AddDynamicCustomDraw(floatingXpBounds, (ctx, surface, bounds) =>
         {
             foreach (var fxpElem in floatingXPElements)
@@ -39,7 +39,7 @@ public class FloatingXpDisplay : HudElement
             }
         }, "floatingXP");
 
-        SingleComposer.Bounds.Alignment = EnumDialogArea.CenterMiddle;
+        SingleComposer.Bounds.Alignment = EnumDialogArea.RightTop;
         SingleComposer.Compose();
     }
 
@@ -52,7 +52,7 @@ public class FloatingXpDisplay : HudElement
 
         var skillName = playerSkill.Skill.Name;
         double startX = 0;
-        double startY = 100;
+        double startY = 150;
 
         foreach (var queuedXP in pendingXPs)
         {
@@ -64,7 +64,7 @@ public class FloatingXpDisplay : HudElement
             }
         }
 
-        pendingXPs.Enqueue(new FloatingXPElement(capi, ElementBounds.Fixed(0, 0, 0, 0), skillName, xp, startX, startY,
+        pendingXPs.Enqueue(new FloatingXPElement(capi, ElementBounds.Fixed(0, 0, 50, 20), skillName, xp, startX, startY,
             3.0f));
         SingleComposer?.GetCustomDraw("floatingXP")?.Redraw();
     }
@@ -77,7 +77,6 @@ public class FloatingXpDisplay : HudElement
             floatingXPElements[i].Update(dt);
             if (floatingXPElements[i].IsDead)
             {
-                floatingXPElements[i].Dispose();
                 floatingXPElements.RemoveAt(i);
             }
         }
@@ -101,7 +100,6 @@ public class FloatingXpDisplay : HudElement
 
     public override void Dispose()
     {
-        base.Dispose();
         capi.World.UnregisterGameTickListener(id);
     }
 

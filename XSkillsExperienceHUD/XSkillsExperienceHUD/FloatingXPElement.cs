@@ -11,9 +11,6 @@ public class FloatingXPElement : GuiElement
     private readonly float totalDuration;
     private float accruedXp;
 
-    private ImageSurface iconSurface;
-
-
     public FloatingXPElement(ICoreClientAPI capi, ElementBounds bounds, string skillName, float xp, double x, double y,
         float duration)
         : base(capi, bounds)
@@ -76,7 +73,7 @@ public class FloatingXPElement : GuiElement
         ctx.MoveTo(X, Y);
         ctx.ShowText(Text);
 
-        iconSurface = Icons.GetImageSurfaceForIcon(SkillNameToIconName(SkillName));
+        var iconSurface = Icons.GetImageSurfaceForIcon(SkillNameToIconName(SkillName));
 
 
         var iconPosX = extents.Width + X + 5;
@@ -114,12 +111,6 @@ public class FloatingXPElement : GuiElement
     public void AddXP(float xp)
     {
         accruedXp += xp;
-    }
-
-    public override void Dispose()
-    {
-        iconSurface?.Dispose();
-        base.Dispose();
     }
 
     private IconName SkillNameToIconName(string skillName)

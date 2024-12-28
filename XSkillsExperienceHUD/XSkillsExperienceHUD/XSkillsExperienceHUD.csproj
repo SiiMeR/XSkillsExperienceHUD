@@ -42,6 +42,18 @@
             <HintPath>$(VINTAGE_STORY)/Lib/SkiaSharp.dll</HintPath>
             <Private>false</Private>
         </Reference>
+        <Reference Include="configlib">
+            <HintPath>Lib/configlib/configlib.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="ImGui.NET">
+            <HintPath>Lib/vsimgui/ImGui.NET.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="VSImGui">
+            <HintPath>Lib/vsimgui/VSImGui.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>

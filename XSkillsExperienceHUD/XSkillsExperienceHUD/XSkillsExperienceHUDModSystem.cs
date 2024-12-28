@@ -22,6 +22,11 @@ public class XSkillsExperienceHUDModSystem : ModSystem
     {
         capi = api;
 
+        if (api.ModLoader.IsModEnabled("configlib"))
+        {
+            _ = new ConfigLibCompatibility(api);
+        }
+
         Icons.Initialize();
         ExperienceDisplay = new ExperienceDisplay(api);
         ApplyHarmonyPatch(api);
@@ -38,5 +43,11 @@ public class XSkillsExperienceHUDModSystem : ModSystem
         harmony.Patch(original, postfix: new HarmonyMethod(patch));
 
         base.StartClientSide(api);
+    }
+
+    public override void Dispose()
+    {
+        Icons.DisposeAll();
+        base.Dispose();
     }
 }
