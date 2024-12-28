@@ -56,7 +56,7 @@ public class FloatingXPElement : GuiElement
         base.ComposeElements(ctx, surface);
 
         ctx.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Bold);
-        ctx.SetFontSize(25);
+        ctx.SetFontSize(XSkillsExperienceHUDModSystem.Config.FloatingTextFontSize);
 
         // main txt shadow
         ctx.SetSourceRGBA(0, 0, 0, Alpha * 0.7);
@@ -73,12 +73,9 @@ public class FloatingXPElement : GuiElement
         ctx.MoveTo(X, Y);
         ctx.ShowText(Text);
 
-        var iconSurface = Icons.GetImageSurfaceForIcon(SkillNameToIconName(SkillName));
-
-
+        var iconSurface = Icons.GetImageSurfaceForIcon(Util.SkillNameToIconName(SkillName));
         var iconPosX = extents.Width + X + 5;
         var iconPosY = Y - 22;
-
 
         // icon shadow
         ctx.Save();
@@ -111,25 +108,6 @@ public class FloatingXPElement : GuiElement
     public void AddXP(float xp)
     {
         accruedXp += xp;
-    }
-
-    private IconName SkillNameToIconName(string skillName)
-    {
-        return skillName switch
-        {
-            "combat" => IconName.Combat,
-            "cooking" => IconName.Cooking,
-            "digging" => IconName.Digging,
-            "farming" => IconName.Farming,
-            "forestry" => IconName.Forestry,
-            "husbandry" => IconName.Husbandry,
-            "metalworking" => IconName.Metalworking,
-            "mining" => IconName.Mining,
-            "pottery" => IconName.Pottery,
-            "survival" => IconName.Survival,
-            "temporaladaptation" => IconName.TemporalAdaption,
-            _ => IconName.Unknown
-        };
     }
 }
 

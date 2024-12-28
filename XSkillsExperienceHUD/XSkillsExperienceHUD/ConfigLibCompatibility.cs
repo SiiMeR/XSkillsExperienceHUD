@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Numerics;
 using ConfigLib;
 using ImGuiNET;
@@ -37,13 +38,27 @@ public class ConfigLibCompatibility
 
     private void Edit(ICoreClientAPI api, ModConfig.ModConfig config, string id)
     {
-        var showSurvivalExperience = config.ShowSurvivalExperience;
-        ImGui.Checkbox("Show survival experience drops", ref showSurvivalExperience);
-        config.ShowSurvivalExperience = showSurvivalExperience;
+        var floatingTextFontSize = config.FloatingTextFontSize;
+        ImGui.SliderInt("Floating text font size", ref floatingTextFontSize, 20, 35);
+        config.FloatingTextFontSize = floatingTextFontSize;
 
-        var showTemporalAdaptionExperience = config.ShowTemporalAdaptionExperience;
-        ImGui.Checkbox("Show temporal adaption experience drops", ref showTemporalAdaptionExperience);
-        config.ShowTemporalAdaptionExperience = showTemporalAdaptionExperience;
+        ImGui.NewLine();
+
+
+        var isVisible = true;
+        if (ImGui.CollapsingHeader("Enable / Disable floating XP for skills", ref isVisible))
+        {
+            foreach (IconName skill in Enum.GetValues(typeof(IconName)))
+            {
+                var currentValue = config.SkillConfiguration[skill];
+                if (ImGui.Checkbox(skill.ToString(), ref currentValue))
+                {
+                    config.SkillConfiguration[skill] = currentValue;
+                }
+            }
+        }
+
+        ImGui.NewLine();
 
         var floatingTextColor = config.FloatingTextColor;
         var color = ColorTranslator.FromHtml(floatingTextColor);
@@ -62,23 +77,5 @@ public class ConfigLibCompatibility
             ColorTranslator.ToHtml(Color.FromArgb(r, g, b));
         config.FloatingTextColor =
             htmlColor;
-        //
-        //
-        // int horizontalRadius = config.HorizontalRadius;
-        // ImGui.InputInt(Lang.Get(settingHorizontalRadius) + $"##horizontalRadius-{id}", ref horizontalRadius, 1,
-        //     10);
-        // config.HorizontalRadius = horizontalRadius <= 0 ? 1 : horizontalRadius;
-        //
-        // int verticalRadius = config.VerticalRadius;
-        // ImGui.InputInt(Lang.Get(settingVerticalRadius) + $"##verticalRadius-{id}", ref verticalRadius, 1,
-        //     10);
-        // config.VerticalRadius = verticalRadius <= 0 ? 1 : verticalRadius;
-        //
-        // var canRemove = config.Markers.Count > 1;
-        // if (!canRemove)
-        // {
-        //     ImGui.BeginDisabled();
-        // }
-        //
     }
 }

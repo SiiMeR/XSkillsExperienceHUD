@@ -45,7 +45,8 @@ public class FloatingXpDisplay : HudElement
 
     public void UpdateDisplay(PlayerSkill playerSkill, float xp)
     {
-        if (playerSkill.Skill.Id == 0 && XSkillsExperienceHUDModSystem.Config.ShowSurvivalExperience == false)
+        if (XSkillsExperienceHUDModSystem.Config.SkillConfiguration[Util.SkillNameToIconName(playerSkill.Skill.Name)] ==
+            false)
         {
             return;
         }
