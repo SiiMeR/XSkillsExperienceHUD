@@ -1,4 +1,6 @@
-﻿using Cairo;
+﻿using System;
+using System.Drawing;
+using Cairo;
 using Vintagestory.API.Client;
 
 namespace XSkillsExperienceHUD;
@@ -28,7 +30,26 @@ public class FloatingXPElement : GuiElement
     public string SkillName { get; }
     public float Alpha { get; private set; }
     public float Duration { get; private set; }
-    public string Text => $"+{accruedXp:0.##}";
+
+    public string Text
+    {
+        get
+        {
+            string formattedXP;
+
+            if (Math.Abs(accruedXp) < 0.01 && accruedXp != 0.0)
+            {
+                formattedXP = accruedXp.ToString("0.###");
+            }
+            else
+            {
+                formattedXP = accruedXp.ToString("0.##");
+            }
+
+            return $"+{formattedXP}";
+        }
+    }
+
     public double X { get; }
     public double Y { get; set; }
     public bool IsDead => Alpha <= 0;
@@ -46,7 +67,8 @@ public class FloatingXPElement : GuiElement
         ctx.ShowText(Text);
 
         // main txt
-        ctx.SetSourceRGBA(1, 1, 0, Alpha);
+        var color = ColorTranslator.FromHtml(XSkillsExperienceHUDModSystem.Config.FloatingTextColor);
+        ctx.SetSourceRGBA(color.R / 255f, color.G / 255f, color.B / 255f, Alpha);
         ctx.MoveTo(X, Y);
         ctx.ShowText(Text);
 

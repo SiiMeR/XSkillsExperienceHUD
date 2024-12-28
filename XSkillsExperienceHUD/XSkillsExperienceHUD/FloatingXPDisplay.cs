@@ -45,8 +45,7 @@ public class FloatingXpDisplay : HudElement
 
     public void UpdateDisplay(PlayerSkill playerSkill, float xp)
     {
-        //TODO: Make this configurable
-        if (playerSkill.Skill.Id == 0)
+        if (playerSkill.Skill.Id == 0 && XSkillsExperienceHUDModSystem.Config.ShowSurvivalExperience == false)
         {
             return;
         }
@@ -78,6 +77,7 @@ public class FloatingXpDisplay : HudElement
             floatingXPElements[i].Update(dt);
             if (floatingXPElements[i].IsDead)
             {
+                floatingXPElements[i].Dispose();
                 floatingXPElements.RemoveAt(i);
             }
         }

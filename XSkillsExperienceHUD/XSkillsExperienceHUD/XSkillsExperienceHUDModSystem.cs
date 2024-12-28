@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using MobsRadar.Configuration;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using XLib.XLeveling;
@@ -9,6 +10,13 @@ public class XSkillsExperienceHUDModSystem : ModSystem
 {
     public static ICoreClientAPI capi;
     public static ExperienceDisplay ExperienceDisplay;
+    public static ModConfig.ModConfig Config { get; set; }
+
+    public override void AssetsLoaded(ICoreAPI api)
+    {
+        Config = ConfigHelper.ReadConfig(api);
+        base.AssetsLoaded(api);
+    }
 
     public override void StartClientSide(ICoreClientAPI api)
     {
