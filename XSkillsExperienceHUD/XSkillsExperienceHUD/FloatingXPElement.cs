@@ -8,6 +8,7 @@ namespace XSkillsExperienceHUD;
 public class FloatingXPElement : GuiElement
 {
     private readonly float fadeSpeed = 0.5f;
+    private readonly ImageSurface iconSurface;
     private readonly float totalDuration;
     private float accruedXp;
 
@@ -16,6 +17,8 @@ public class FloatingXPElement : GuiElement
         : base(capi, bounds)
     {
         SkillName = skillName;
+        iconSurface = Icons.GetImageSurfaceForIcon(Util.SkillNameToIconName(SkillName));
+
         accruedXp = xp;
         X = x;
         Y = y;
@@ -54,39 +57,39 @@ public class FloatingXPElement : GuiElement
     public override void ComposeElements(Context ctx, ImageSurface surface)
     {
         base.ComposeElements(ctx, surface);
+        // Apply scale to everything
+        ctx.Save();
+        var scale = XSkillsExperienceHUDModSystem.Config.FloaterScale * 2f;
+        ctx.Scale(scale, scale);
 
+        // Text setup
         ctx.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Bold);
-        ctx.SetFontSize(XSkillsExperienceHUDModSystem.Config.FloatingTextFontSize);
+        ctx.SetFontSize(25);
 
-        // main txt shadow
+        // Text shadow
         ctx.SetSourceRGBA(0, 0, 0, Alpha * 0.7);
-        ctx.MoveTo(X + 2, Y + 2);
+        ctx.MoveTo(X / scale + 2, Y / scale + 2);
         ctx.ShowText(Text);
 
-        // main txt
+        // Main text
         var color = ColorTranslator.FromHtml(XSkillsExperienceHUDModSystem.Config.FloatingTextColor);
         ctx.SetSourceRGBA(color.R / 255f, color.G / 255f, color.B / 255f, Alpha);
-        ctx.MoveTo(X, Y);
+        ctx.MoveTo(X / scale, Y / scale);
         ctx.ShowText(Text);
 
         var extents = ctx.TextExtents(Text);
-        ctx.MoveTo(X, Y);
-        ctx.ShowText(Text);
+        var iconPosX = extents.Width + X / scale + 5;
+        var iconPosY = Y / scale - 22;
 
-        var iconSurface = Icons.GetImageSurfaceForIcon(Util.SkillNameToIconName(SkillName));
-        var iconPosX = extents.Width + X + 5;
-        var iconPosY = Y - 22;
 
-        // icon shadow
-        ctx.Save();
+        // Icon shadow
         ctx.SetSourceRGBA(0, 0, 0, Alpha * 0.7);
         ctx.MaskSurface(iconSurface, (int)(iconPosX + 2), (int)(iconPosY + 2));
-        ctx.Restore();
 
-        // icon
-        ctx.Save();
+        // Icon
         ctx.SetSourceSurface(iconSurface, (int)iconPosX, (int)iconPosY);
         ctx.PaintWithAlpha(Alpha);
+
         ctx.Restore();
     }
 
@@ -94,7 +97,7 @@ public class FloatingXPElement : GuiElement
     {
         Duration -= dt;
         Alpha -= fadeSpeed * dt;
-        Y -= dt * 45;
+        Y -= dt * XSkillsExperienceHUDModSystem.Config.FloatingTextMoveSpeed;
 
         var progress = 1f - Duration / totalDuration;
         Alpha = 1f - Easings.EaseOutQuad(progress);

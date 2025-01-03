@@ -7,10 +7,13 @@ namespace XSkillsExperienceHUD;
 
 public class ExperienceDisplay : HudElement
 {
+    public static ExperienceDisplay Instance;
     public FloatingXpDisplay FloatingXpDisplay;
 
     public ExperienceDisplay(ICoreClientAPI capi) : base(capi)
     {
+        Instance = this;
+
         capi.Input.RegisterHotKey(
             "toggleexperiencehud",
             "Toggle Experience HUD",
@@ -47,8 +50,13 @@ public class ExperienceDisplay : HudElement
         return true;
     }
 
-    private void SetupDialog()
+    public void SetupDialog()
     {
+        if (!XSkillsExperienceHUDModSystem.Config.ShowExperienceTable)
+        {
+            return;
+        }
+
         var dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.RightMiddle);
 
         var bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);

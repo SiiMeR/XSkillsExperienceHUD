@@ -7,6 +7,7 @@ namespace XSkillsExperienceHUD;
 
 public class FloatingXpDisplay : HudElement
 {
+    public static FloatingXpDisplay Instance;
     private readonly List<FloatingXPElement> floatingXPElements = new();
     private readonly Queue<FloatingXPElement> pendingXPs = new();
     private readonly float spawnInterval = 0.3f;
@@ -15,6 +16,7 @@ public class FloatingXpDisplay : HudElement
 
     public FloatingXpDisplay(ICoreClientAPI capi) : base(capi)
     {
+        Instance = this;
         SetupDialog();
         id = capi.World.RegisterGameTickListener(OnGameTick, 30);
     }
@@ -30,7 +32,9 @@ public class FloatingXpDisplay : HudElement
 
         SingleComposer = capi.Gui.CreateCompo("floatingxpdisplay", dialogBounds);
 
-        var floatingXpBounds = ElementBounds.Fixed(EnumDialogArea.RightTop, 0, 0, 400, 400);
+        var modConfig = XSkillsExperienceHUDModSystem.Config;
+        var floatingXpBounds =
+            ElementBounds.Fixed(modConfig.FloatingXPLocation, modConfig.FloatingXPX, modConfig.FloatingXPY, 400, 400);
         SingleComposer.AddDynamicCustomDraw(floatingXpBounds, (ctx, surface, bounds) =>
         {
             foreach (var fxpElem in floatingXPElements)
@@ -39,7 +43,6 @@ public class FloatingXpDisplay : HudElement
             }
         }, "floatingXP");
 
-        SingleComposer.Bounds.Alignment = EnumDialogArea.RightTop;
         SingleComposer.Compose();
     }
 
