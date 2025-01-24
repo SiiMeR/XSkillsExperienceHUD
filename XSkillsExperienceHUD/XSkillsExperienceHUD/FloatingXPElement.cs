@@ -11,6 +11,9 @@ public class FloatingXPElement : GuiElement
     private readonly ImageSurface iconSurface;
     private readonly float totalDuration;
     private float accruedXp;
+    private Context cachedCtx;
+    private ImageSurface cachedSurface;
+    private bool isDirty;
 
     public FloatingXPElement(ICoreClientAPI capi, ElementBounds bounds, string skillName, float xp, double x, double y,
         float duration)
@@ -25,6 +28,8 @@ public class FloatingXPElement : GuiElement
         Duration = duration;
         totalDuration = duration;
         Alpha = 1f;
+
+        isDirty = true;
     }
 
     public string SkillName { get; }
@@ -57,40 +62,61 @@ public class FloatingXPElement : GuiElement
     public override void ComposeElements(Context ctx, ImageSurface surface)
     {
         base.ComposeElements(ctx, surface);
-        // Apply scale to everything
+
+        if (isDirty)
+        {
+            RebuildCachedSurface();
+            isDirty = false;
+        }
+
         ctx.Save();
+
         var scale = XSkillsExperienceHUDModSystem.Config.FloaterScale * 2f;
         ctx.Scale(scale, scale);
 
-        // Text setup
-        ctx.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Bold);
-        ctx.SetFontSize(25);
+        ctx.SetSourceSurface(cachedSurface, (int)(X / scale), (int)(Y / scale));
 
-        // Text shadow
-        ctx.SetSourceRGBA(0, 0, 0, Alpha * 0.7);
-        ctx.MoveTo(X / scale + 2, Y / scale + 2);
-        ctx.ShowText(Text);
-
-        // Main text
-        var color = ColorTranslator.FromHtml(XSkillsExperienceHUDModSystem.Config.FloatingTextColor);
-        ctx.SetSourceRGBA(color.R / 255f, color.G / 255f, color.B / 255f, Alpha);
-        ctx.MoveTo(X / scale, Y / scale);
-        ctx.ShowText(Text);
-
-        var extents = ctx.TextExtents(Text);
-        var iconPosX = extents.Width + X / scale + 5;
-        var iconPosY = Y / scale - 22;
-
-
-        // Icon shadow
-        ctx.SetSourceRGBA(0, 0, 0, Alpha * 0.7);
-        ctx.MaskSurface(iconSurface, (int)(iconPosX + 2), (int)(iconPosY + 2));
-
-        // Icon
-        ctx.SetSourceSurface(iconSurface, (int)iconPosX, (int)iconPosY);
         ctx.PaintWithAlpha(Alpha);
 
         ctx.Restore();
+    }
+
+    private void RebuildCachedSurface()
+    {
+        cachedSurface?.Dispose();
+        cachedSurface = new ImageSurface(Format.Argb32, 200, 40);
+        cachedCtx?.Dispose();
+        cachedCtx = new Context(cachedSurface);
+
+        cachedCtx.Save();
+
+        cachedCtx.SelectFontFace("Sans", FontSlant.Normal, FontWeight.Bold);
+        cachedCtx.SetFontSize(25);
+
+        cachedCtx.SetSourceRGBA(0, 0, 0, 1.0);
+        cachedCtx.MoveTo(2, 25); // baseline around y=25
+        cachedCtx.ShowText(Text);
+
+        // Main text
+        var color = ColorTranslator.FromHtml(XSkillsExperienceHUDModSystem.Config.FloatingTextColor);
+        cachedCtx.SetSourceRGBA(color.R / 255f, color.G / 255f, color.B / 255f, 1.0);
+        cachedCtx.MoveTo(0, 23); // baseline around y=23
+        cachedCtx.ShowText(Text);
+
+        var te = cachedCtx.TextExtents(Text);
+        var textWidth = (float)te.Width;
+
+        // Icon shadow
+        var iconPosX = textWidth + 5;
+        float iconPosY = 0;
+        cachedCtx.SetSourceRGBA(0, 0, 0, 1.0);
+        cachedCtx.MaskSurface(iconSurface, (int)(iconPosX + 2), (int)(iconPosY + 2));
+
+        // Icon
+        cachedCtx.SetSourceSurface(iconSurface, (int)iconPosX, (int)iconPosY);
+        cachedCtx.Paint();
+
+        cachedCtx.Restore();
     }
 
     public void Update(float dt)
@@ -111,6 +137,7 @@ public class FloatingXPElement : GuiElement
     public void AddXP(float xp)
     {
         accruedXp += xp;
+        isDirty = true;
     }
 }
 
