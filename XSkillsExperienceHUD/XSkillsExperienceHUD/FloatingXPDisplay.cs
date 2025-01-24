@@ -69,7 +69,7 @@ public class FloatingXpDisplay : HudElement
         }
 
         pendingXPs.Enqueue(new FloatingXPElement(capi, ElementBounds.Fixed(0, 0, 50, 20), skillName, xp, startX, startY,
-            3.0f));
+            5.0f));
         SingleComposer?.GetCustomDraw("floatingXP")?.Redraw();
     }
 

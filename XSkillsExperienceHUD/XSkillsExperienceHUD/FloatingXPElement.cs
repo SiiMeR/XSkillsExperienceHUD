@@ -7,7 +7,7 @@ namespace XSkillsExperienceHUD;
 
 public class FloatingXPElement : GuiElement
 {
-    private readonly float fadeSpeed = 0.5f;
+    private readonly float fadeSpeed = 0.4f;
     private readonly ImageSurface iconSurface;
     private readonly float totalDuration;
     private float accruedXp;

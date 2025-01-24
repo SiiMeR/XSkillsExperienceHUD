@@ -1,14 +1,15 @@
 {
-    "type": "code",
-    "modid": "xskillsexperiencehud",
-    "name": "XSkillsExperienceHUD",
-    "authors": [
-        "SiiMeR"
-    ],
-    "description": "Shows a small text when you gain XP in a skill",
-    "version": "1.0.0",
-    "dependencies": {
-        "game": "",
-        "xlib": ""
-    }
+  "type": "code",
+  "modid": "xskillsexperiencehud",
+  "name": "XSkillsExperienceHUD",
+  "authors": [
+    "SiiMeR"
+  ],
+  "side": "Client",
+  "requiredOnClient": true,
+  "description": "Shows a small text when you gain XP in a skill",
+  "version": "1.0.2",
+  "dependencies": {
+    "game": ""
+  }
 }

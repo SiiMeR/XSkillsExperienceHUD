@@ -17,7 +17,7 @@ public class ExperienceDisplay : HudElement
         capi.Input.RegisterHotKey(
             "toggleexperiencehud",
             "Toggle Experience HUD",
-            GlKeys.K,
+            GlKeys.Comma,
             HotkeyType.GUIOrOtherControls
         );
         capi.Input.SetHotKeyHandler("toggleexperiencehud", ToggleGui);

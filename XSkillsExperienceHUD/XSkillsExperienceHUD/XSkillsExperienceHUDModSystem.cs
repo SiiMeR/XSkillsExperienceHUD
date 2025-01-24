@@ -12,15 +12,11 @@ public class XSkillsExperienceHUDModSystem : ModSystem
     public static ExperienceDisplay ExperienceDisplay;
     public static ModConfig.ModConfig Config { get; set; }
 
-    public override void AssetsLoaded(ICoreAPI api)
-    {
-        Config = ConfigHelper.ReadConfig(api);
-        base.AssetsLoaded(api);
-    }
 
     public override void StartClientSide(ICoreClientAPI api)
     {
         capi = api;
+        Config = ConfigHelper.ReadConfig(api);
 
         if (api.ModLoader.IsModEnabled("configlib"))
         {
@@ -30,6 +26,9 @@ public class XSkillsExperienceHUDModSystem : ModSystem
         Icons.Initialize();
         ExperienceDisplay = new ExperienceDisplay(api);
         ApplyHarmonyPatch(api);
+
+        // ExperienceDisplay.TryOpen();
+        // FloatingXpDisplay.Instance.TryOpen();
     }
 
     private void ApplyHarmonyPatch(ICoreClientAPI api)
